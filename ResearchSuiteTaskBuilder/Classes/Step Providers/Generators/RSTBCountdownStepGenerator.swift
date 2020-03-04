@@ -1,34 +1,36 @@
 //
-//  RSTBImageCaptureStepGenerator.swift
-//  Pods
+//  RSTBCountdownStepGenerator.swift
+//  ResearchSuiteTaskBuilder
 //
-//  Created by James Kizer on 8/16/17.
+//  Created by James Kizer on 6/14/18.
 //
-//
+
+import UIKit
 
 import ResearchKit
 import Gloss
 
-open class RSTBImageCaptureStepGenerator: RSTBBaseStepGenerator {
+open class RSTBCountdownStepGenerator: RSTBBaseStepGenerator {
     
-    public init() {}
+    public init(){}
     
     open var supportedTypes: [String]! {
-        return ["imageCapture"]
+        return ["countdown"]
     }
     
     open func generateStep(type: String, jsonObject: JSON, helper: RSTBTaskBuilderHelper) -> ORKStep? {
         
-        guard let stepDescriptor = RSTBStepDescriptor(json: jsonObject)  else {
-                return nil
+        guard let stepDescriptor = RSTBStepDescriptor(json:jsonObject) else {
+            return nil
         }
         
-        let step =
-            ORKImageCaptureStep(identifier: stepDescriptor.identifier)
+        let step = ORKCountdownStep(identifier: stepDescriptor.identifier)
+        if let duration: TimeInterval = "duration" <~~ jsonObject {
+            step.stepDuration = duration
+        }
         step.title = helper.localizationHelper.localizedString(stepDescriptor.title)
         step.text = helper.localizationHelper.localizedString(stepDescriptor.text)
         step.isOptional = stepDescriptor.optional
-        
         
         return step
     }
@@ -36,8 +38,8 @@ open class RSTBImageCaptureStepGenerator: RSTBBaseStepGenerator {
     open func processStepResult(type: String,
                                 jsonObject: JsonObject,
                                 result: ORKStepResult,
-                                helper: RSTBTaskBuilderHelper) -> JSON?{
+                                helper: RSTBTaskBuilderHelper) -> JSON? {
         return nil
     }
-
+    
 }
