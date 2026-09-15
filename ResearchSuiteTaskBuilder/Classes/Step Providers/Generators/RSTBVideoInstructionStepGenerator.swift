@@ -1,19 +1,20 @@
 //
-//  RSTBInstructionStepGenerator.swift
-//  Pods
+//  RSTBVideoInstructionStepGenerator.swift
+//  ResearchSuiteTaskBuilder
 //
-//  Created by James Kizer on 1/9/17.
-//
+//  Created by James Kizer on 10/18/18.
 //
 
+import UIKit
 import ResearchKit
 import Gloss
 
-open class RSTBInstructionStepGenerator: RSTBBaseStepGenerator {
+open class RSTBVideoInstructionStepGenerator: RSTBBaseStepGenerator {
+
     public init(){}
     
     let _supportedTypes = [
-        "instruction"
+        "videoInstructionStep"
     ]
     
     public var supportedTypes: [String]! {
@@ -22,16 +23,17 @@ open class RSTBInstructionStepGenerator: RSTBBaseStepGenerator {
     
     open func generateStep(type: String, jsonObject: JSON, helper: RSTBTaskBuilderHelper) -> ORKStep? {
         
-        guard let element = RSTBInstructionStepDescriptor(json: jsonObject) else {
+        guard let element = RSTBVideoInstructionStepDescriptor(json: jsonObject),
+            let urlBase = helper.stateHelper?.valueInState(forKey: element.urlBaseKey) as? String,
+            let videoURL = URL(string: urlBase + element.urlPath) else {
             return nil
         }
         
-        let step = ORKInstructionStep(identifier: element.identifier)
+        let step = ORKVideoInstructionStep(identifier: element.identifier)
         step.title = helper.localizationHelper.localizedString(element.title)
         step.text =  helper.localizationHelper.localizedString(element.text)
-        step.detailText =  helper.localizationHelper.localizedString(element.detailText)
-        if let imageTitle = element.imageTitle { step.image = UIImage(named: imageTitle) }
-        if let auxImageTitle = element.auxImageTitle { step.auxiliaryImage = UIImage(named: auxImageTitle) }
+        step.videoURL = videoURL
+        
         return step
     }
     
@@ -41,4 +43,5 @@ open class RSTBInstructionStepGenerator: RSTBBaseStepGenerator {
                                 helper: RSTBTaskBuilderHelper) -> JSON? {
         return nil
     }
+    
 }

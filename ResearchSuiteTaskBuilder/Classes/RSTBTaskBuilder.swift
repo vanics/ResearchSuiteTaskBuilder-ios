@@ -14,17 +14,19 @@ public typealias JsonObject = JSON
 public typealias JsonArray = [JSON]
 
 public protocol RSTBStateHelper: class {
+    //this can be used for more ephemeral objects, not anything that should be persisted (e.g., LS2 SDK Manager)
+    func objectInState(forKey: String) -> AnyObject?
     func valueInState(forKey: String) -> NSSecureCoding?
     func setValueInState(value: NSSecureCoding?, forKey: String)
 }
 
 open class RSTBTaskBuilder {
     
-    private var _helper:RSTBTaskBuilderHelper!
+    open var _helper:RSTBTaskBuilderHelper!
     public var helper:RSTBTaskBuilderHelper {
         return self._helper
     }
-    private var stepGeneratorService: RSTBStepGeneratorService!
+    open var stepGeneratorService: RSTBStepGeneratorService!
     private var answerFormatGeneratorService: RSTBAnswerFormatGeneratorService!
     private var elementGeneratorService: RSTBElementGeneratorService!
     private var taskGeneratorService: RSTBTaskGeneratorService!
@@ -34,6 +36,7 @@ open class RSTBTaskBuilder {
     
     public init(
         stateHelper:RSTBStateHelper?,
+        localizationHelper: RSTBLocalizationHelper?,
         elementGeneratorServices: [RSTBElementGenerator]?,
         stepGeneratorServices: [RSTBStepGenerator]?,
         answerFormatGeneratorServices: [RSTBAnswerFormatGenerator]?,
@@ -42,7 +45,7 @@ open class RSTBTaskBuilder {
         consentSectionGeneratorServices: [RSTBConsentSectionGenerator.Type]? = nil,
         consentSignatureGeneratorServices: [RSTBConsentSignatureGenerator.Type]? = nil
         ) {
-        self._helper = RSTBTaskBuilderHelper(builder: self, stateHelper: stateHelper)
+        self._helper = RSTBTaskBuilderHelper(builder: self, stateHelper: stateHelper, localizationHelper: localizationHelper)
         
         if let _services = stepGeneratorServices {
             self.stepGeneratorService = RSTBStepGeneratorService(services: _services)
@@ -162,7 +165,7 @@ open class RSTBTaskBuilder {
         return Array(stepArrays.joined())
     }
     
-    public func createSteps(forType type: String, withJsonObject jsonObject: JsonObject, identifierPrefix: String = "") -> [ORKStep]? {
+    open func createSteps(forType type: String, withJsonObject jsonObject: JsonObject, identifierPrefix: String = "") -> [ORKStep]? {
         return self.stepGeneratorService.generateSteps(type: type, jsonObject: jsonObject, helper: self.helper, identifierPrefix: identifierPrefix)
     }
     

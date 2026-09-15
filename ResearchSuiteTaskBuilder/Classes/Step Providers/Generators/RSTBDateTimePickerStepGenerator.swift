@@ -1,20 +1,19 @@
 //
-//  RSTBDatePickerStepGenerator.swift
-//  Pods
+//  RSTBDateTimePickerStepGenerator.swift
+//  ResearchSuiteTaskBuilder
 //
-//  Created by James Kizer on 1/9/17.
-//
+//  Created by James Kizer on 6/19/18.
 //
 
 import ResearchKit
 import Gloss
 
-open class RSTBDatePickerStepGenerator: RSTBQuestionStepGenerator {
+open class RSTBDateTimePickerStepGenerator: RSTBQuestionStepGenerator {
     
     override public init() {}
     
     override open var supportedTypes: [String]! {
-        return ["datePicker"]
+        return ["dateTimePicker"]
     }
     
     override open func generateAnswerFormat(type: String, jsonObject: JSON, helper: RSTBTaskBuilderHelper) -> ORKAnswerFormat? {
@@ -23,23 +22,16 @@ open class RSTBDatePickerStepGenerator: RSTBQuestionStepGenerator {
             return nil
         }
         
-        return ORKAnswerFormat.dateAnswerFormat(
+        return ORKAnswerFormat.dateTime(
             withDefaultDate: stepDescriptor.defaultDate,
             minimumDate: stepDescriptor.minimumDate,
             maximumDate: stepDescriptor.maximumDate,
             calendar: nil
         )
+        
     }
     
     open override func processQuestionResult(type: String, result: ORKQuestionResult, helper: RSTBTaskBuilderHelper) -> JSON? {
-        if let result = result as? ORKDateQuestionResult,
-            let date = result.dateAnswer {
-            return [
-                "identifier": result.identifier,
-                "type": type,
-                "answer": GlossDateFormatterISO8601.string(from: date)
-            ]
-        }
         return  nil
     }
 
